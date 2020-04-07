@@ -1,0 +1,12 @@
+/*!
+ * Theme Name:dayuzy
+ * Theme URI:https://dayuzy.com
+ * Description:大鱼资源网全面升级版
+ * Author:dayu
+ * Author URI:https://dayuzy.com
+ * Version:1.0
+ */
+
+.logo{float:left;margin: 0 15px 0 30px;padding-right:30px;width:140px;font-size:1.125rem;}
+.logo a{display:block;color:#fff;transition: none;}
+.logo a:hover{color:#1890ff}
