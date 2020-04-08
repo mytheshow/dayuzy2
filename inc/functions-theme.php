@@ -67,7 +67,7 @@ function _get_tax_meta($id = 0, $field = '')
 	if (empty($ops)) {
 		return '';
 	}
-
+//返回数组
 	if (empty($field)) {
 		return $ops;
 	}
@@ -108,4 +108,12 @@ function _bodyclass()
 	}
 
 	return trim($class);
+}
+
+$current_theme = wp_get_theme();
+//获取主题的版本号
+function _the_theme_version()
+{
+	global $current_theme;
+	return $current_theme->get('Version');
 }

@@ -21,7 +21,9 @@
 <body <?php  body_class(_bodyclass())  ?> >
 <header class="header">
   <div class="container_header">
-	  <?php //var_dump(esc_url(home_url('/'),['https','http2']));?>
+	  <?php //var_dump(esc_url(home_url('/'),['https','http2']));
+	  var_dump(_the_theme_version());
+    ?>
     <h1 class="logo"><a href="<?php echo esc_url(home_url('/')); ?>" rel="home"><img src="<?php echo _hui_img('header_logo'); ?>"></a></h1>
   </div>
 </header>
