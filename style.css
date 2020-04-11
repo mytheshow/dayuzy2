@@ -7,6 +7,10 @@
  * Version:1.0
  */
 
-.logo{float:left;margin: 0 15px 0 30px;padding-right:30px;width:140px;font-size:1.125rem;}
+/*.logo{float:left;margin: 0 15px 0 30px;padding-right:30px;width:140px;font-size:1.125rem;}*/
 .logo a{display:block;color:#fff;transition: none;}
 .logo a:hover{color:#1890ff}
+.logo{float:none;margin:12px auto 0;padding:0;width:90px;height:18px;border-right:none;line-height: normal;font-size:1.125rem;}
+.logo a{display:inline-block}
+.sign-container header .logo{float: unset; overflow: hidden; height: 40px; text-align: center; margin: 0 auto; display: block; border-right: 1px solid transparent; padding-right: 0; max-width: 150px;}
+.sign-container header .logo img{display: block; margin-bottom: 0; max-height: 40px; text-align: center; margin: 0 auto;}

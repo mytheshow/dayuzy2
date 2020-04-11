@@ -117,3 +117,21 @@ function _the_theme_version()
 	global $current_theme;
 	return $current_theme->get('Version');
 }
+
+
+/**
+ * [_load_scripts 加载主题静态资源]
+ * @Author   Dadong2g
+ * @DateTime 2019-05-28T12:18:56+0800
+ * @return   [type]                   [description]
+ */
+function _load_scripts()
+{
+	if (!is_admin()) {
+		//注册style句柄 第三个参数是依赖的句柄
+		wp_register_style('main', get_stylesheet_directory_uri() . '/style.css', array(), _the_theme_version(), 'all');
+		//使用style句柄
+		wp_enqueue_style('main');
+	}
+}
+add_action('wp_enqueue_scripts', '_load_scripts');
