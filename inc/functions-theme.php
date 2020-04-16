@@ -135,3 +135,35 @@ function _load_scripts()
 	}
 }
 add_action('wp_enqueue_scripts', '_load_scripts');
+
+function _the_theme_avatar()
+{
+	return get_stylesheet_directory_uri() . '/img/avatar.png';
+}
+
+/**
+ * [_get_user_avatar 获取头像]
+ * @Author   Dadong2g
+ * @DateTime 2019-05-28T12:17:13+0800
+ * @param    string                   $user_email [description]
+ * @param    boolean                  $src        [description]
+ * @param    integer                  $size       [description]
+ * @return   [type]                               [description]
+ */
+function _get_user_avatar($user_email = '', $src = false, $size = 50)
+{
+	//邮箱 大小 默认头像
+	$avatar = get_avatar($user_email, $size, _the_theme_avatar());
+	//如果传递了url头像
+	if ($src) {
+		return $avatar;
+	} else {
+		return str_replace(' src=', ' data-src=', $avatar);
+	}
+
+}
+function get_ssl_avatar($avatar) {
+   $avatar = preg_replace('/.*\/avatar\/(.*)\?s=([\d]+)&.*/','<img src="https://secure.gravatar.com/avatar/$1?s=$2" class="avatar avatar-$2" height="$2" width="$2">',$avatar);
+   return $avatar;
+}
+add_filter('get_avatar', 'get_ssl_avatar');

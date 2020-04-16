@@ -21,3 +21,8 @@ if (!function_exists('_hui_img')) {
  * 日进去主题的模板标签函数
  */
 require_once get_stylesheet_directory() . '/inc/functions-theme.php';
+/**
+ *
+ * 日进去主题的商城订单框架
+ */
+require_once get_stylesheet_directory() . '/shop/init.php';
