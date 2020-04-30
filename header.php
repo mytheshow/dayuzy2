@@ -60,10 +60,32 @@
           </ul>
         </div>
         <footer>
+          <!--退出用户登陆，并跳转到首页-->
           <a href="<?php echo wp_logout_url(home_url()); ?>">退出当前账户</a>
         </footer>
       </div>
-	  <?php }?>
+	  <?php }else{ ?>
+      <div class="wel">
+        <div class="wel-item">
+          <a href="<?php echo home_url('/user?action=vip') ?>"><i class="iconfont">&#xe63f;</i> 开通VIP</a>
+        </div>
+
+        <div class="wel-item"><a href="<?php echo home_url('login') ?>" etap="login_btn">登录</a></div>
+        <div class="wel-item wel-item-btn"><a href="<?php echo home_url('/login?action=register') ?>" etap="register_btn">注册新用户</a></div>
+        <div class="wel-item"><a href="javascript:;" id="search"><i class="iconfont">&#xe67a;</i></a></div>
+      </div>
+
+      <div class="m-wel">
+        <div class="m-wel-login">
+          <img class="avatar" src="<?php echo get_stylesheet_directory_uri() . '/img/avatar.png';?>">
+          <a class="m-wel-login" href="<?php echo home_url('login') ?>">登录</a>
+          <a class="m-wel-register" href="<?php echo home_url('/login?action=register') ?>">新用户注册</a>
+        </div>
+      </div>
+	  <?php } ?>
+    <div class="site-navbar">
+		  <?php _the_menu('nav'); ?>
+    </div>
   </div>
   <?php
 

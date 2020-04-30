@@ -167,3 +167,72 @@ function get_ssl_avatar($avatar) {
    return $avatar;
 }
 add_filter('get_avatar', 'get_ssl_avatar');
+
+
+/**
+ * Header_Menu_Walker类
+ */
+class Header_Menu_Walker extends Walker_Nav_Menu
+{
+	//自定义子菜单，该函数会循环执行，儿子，孙子... 一般也就循环到孙子，在往下就不好看了
+	public function start_lvl(&$output, $depth = 0, $args = array())
+	{
+		//制表符和换行 在右键 查看网页源代码可以看出
+		$indent      = ($depth > 0 ? str_repeat("\t", $depth) : ''); // 缩进
+		$classes     = array('sub-menu');
+		$class_names = implode(' ', $classes); //用空格分割多个样式名
+		$output .= "\n" . $indent . '<div class="' . $class_names . '"><ul>' . "\n"; //
+	}
+
+	public function end_lvl( &$output, $depth = 0, $args = array() ) {
+		if ( isset( $args->item_spacing ) && 'discard' === $args->item_spacing ) {
+			$t = '';
+			$n = '';
+		} else {
+			$t = "\t";
+			$n = "\n";
+		}
+		$indent  = str_repeat( $t, $depth );
+		$output .= "$indent</ul>{$n}</div>";
+	}
+}
+
+/**
+ * 移除菜单的多余CSS选择器
+ * From https://www.wpdaxue.com/remove-wordpress-nav-classes.html
+ */
+add_filter('nav_menu_css_class', 'my_css_attributes_filter', 100, 1);
+add_filter('nav_menu_item_id', 'my_css_attributes_filter', 100, 1);
+add_filter('page_css_class', 'my_css_attributes_filter', 100, 1);
+function my_css_attributes_filter($var)
+{
+	return is_array($var) ? array_intersect($var, array('current_page_item', 'menu-item-has-children')) : '';
+}
+
+/**
+ * 注册菜单
+ * https://blog.csdn.net/qq_37296622/article/details/82633833
+ */
+if (function_exists('register_nav_menus')) {
+	//键值对数组，名字随意，不必要非得是nav
+	register_nav_menus(array(
+		'nav' => __('导航aa'),
+	));
+}
+
+/**
+ * [_the_menu menu]
+ * @Author   Dadong2g
+ * @DateTime 2019-05-28T12:28:16+0800
+ * @param    string                   $location [description]
+ * @return   [type]                             [description]
+ * https://blog.csdn.net/qq_37296622/article/details/82633833
+ */
+function _the_menu($location = 'nav')
+{
+	// 根据位置找菜单，在输出菜单项
+	//整个流程是，我先注册个为 ‘nav’ 的位置，get_nav_menu_locations()获取已经注册的菜单位置以及分配给该位置的菜单项的term_id，获取该菜单的项item
+	//如果container为空就默认套个div，并且再套个ul，如果是个ul默认就套个 $menu = $args['before'] . $menu . $args['after'];不用再套div和ul了
+	//如果我后台创建了两个菜单 都勾选了"导航呢？"，发现根本不会，第二个勾选导航，第一个菜单的导航就自动取消勾选了
+	echo wp_nav_menu(array('theme_location' => $location, 'container' => 'ul', 'echo' => false, 'walker' => new Header_Menu_Walker()));
+}
