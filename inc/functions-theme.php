@@ -236,3 +236,91 @@ function _the_menu($location = 'nav')
 	//如果我后台创建了两个菜单 都勾选了"导航呢？"，发现根本不会，第二个勾选导航，第一个菜单的导航就自动取消勾选了
 	echo wp_nav_menu(array('theme_location' => $location, 'container' => 'ul', 'echo' => false, 'walker' => new Header_Menu_Walker()));
 }
+
+function _the_theme_name()
+{
+	global $current_theme;
+	return $current_theme->get('Name');
+}
+
+
+/**
+ * [timthumb 图像裁切]
+ * @Author   Dadong2g
+ * @DateTime 2019-05-28T12:16:48+0800
+ * @param    [type]                   $src  [description]
+ * @param    [type]                   $size [description]
+ * @param    [type]                   $set  [description]
+ * @return   [type]                         [description]
+ */
+function timthumb($src, $size = null, $set = null)
+{
+
+	$modular = _hui('thumbnail_handle');
+	//is_numeric() 函数用于检测变量是否为数字或数字字符串
+	if (is_numeric($src)) {
+		//WP自带裁剪
+		if ($modular == 'timthumb_mi') {
+			// $src = image_downsize( $src, $size['w'].'-'.$size['h'] );
+			//参数1：传递图片的ID 参数2：裁剪风格，可以自定义宽高
+			$src = image_downsize($src, 'thumbnail');
+		} else {
+			$src = image_downsize($src, 'full');
+		}
+		$src = $src[0];
+	}
+
+	if ($set == 'original') {
+		return $src;
+	}
+	//默认 timthumb.php裁剪（可保持缩略图大小一致）,自定义裁剪文件
+	if ($modular == 'timthumb_php' || empty($modular) || $set == 'tim') {
+
+		return get_stylesheet_directory_uri() . '/timthumb.php?src=' . $src . '&h=' . $size["h"] . '&w=' . $size['w'] . '&zc=1&a=c&q=100&s=1';
+
+	} else {
+		return $src;
+	}
+
+}
+
+
+/**
+ * [_get_post_thumbnail_url 输出缩略图地址]
+ * @Author   Dadong2g
+ * @DateTime 2019-05-28T12:16:30+0800
+ * @param    [type]                   $post [post]
+ * @return   [type]                         [description]
+ */
+function _get_post_thumbnail_url($post = null)
+{
+	if ($post === null) {
+		global $post;
+	}
+
+	if (has_post_thumbnail($post)) {
+		//如果有特色缩略图，则输出缩略图地址
+		$post_thumbnail_src = get_post_thumbnail_id($post->ID);
+	} else {
+		$post_thumbnail_src = '';
+		@$output            = preg_match_all('/<img.+src=[\'"]([^\'"]+)[\'"].*>/i', $post->post_content, $matches);
+		if (!empty($matches[1][0])) {
+
+			global $wpdb;
+			$att = $wpdb->get_row($wpdb->prepare("SELECT ID FROM $wpdb->posts WHERE guid LIKE '%s'", $matches[1][0]));
+
+			if ($att) {
+				$post_thumbnail_src = $att->ID;
+			} else {
+				$post_thumbnail_src = $matches[1][0];
+			}
+
+		} else {
+
+			$post_thumbnail_src = _the_theme_thumb();
+
+		}
+	}
+	return $post_thumbnail_src;
+}
+

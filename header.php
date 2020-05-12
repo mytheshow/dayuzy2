@@ -18,6 +18,7 @@
   <!--让IE9以下的浏览器支持HTML5元素方法-->
   <!--[if lt IE 9]><script src="<?php echo get_stylesheet_directory_uri() ?>/js/html5.js"></script><![endif]-->
 </head>
+
 <body <?php  body_class(_bodyclass())  ?> >
 <header class="header">
   <div class="container_header">
@@ -86,10 +87,30 @@
     <div class="site-navbar">
 		  <?php _the_menu('nav'); ?>
     </div>
-  </div>
-  <?php
 
-  ?>
+    <div class="m-navbar-start"><i class="iconfont">&#xe648;</i></div>
+    <div class="m-wel-start"><i class="iconfont">&#xe66b;</i></div>
+    <div class="m-mask"></div>
+  </div>
+  <div id="header-search-dropdown" class="header-search-dropdown ajax-search is-in-navbar js-ajax-search">
+    <div class="container container--narrow">
+      <form class="search-form search-form--horizontal" method="get" action="<?php echo esc_url( home_url( '/' ) ) ?>">
+        <div class="search-form__input-wrap">
+          <input type="text" name="s" class="search-form__input" placeholder="输入关键词进行搜索..." value="">
+        </div>
+        <div class="search-form__submit-wrap">
+          <button type="submit" class="search-form__submit btn btn-primary">搜索一下</button>
+        </div>
+      </form>
+      <div class="search-results">
+        <div class="typing-loader"></div>
+        <div class="search-results__inner"></div>
+      </div>
+    </div>
+  </div>
 </header>
-</body>
-</html>
+
+<!-- 加载页面动画效果 -->
+<script type="text/javascript">
+  $(document).ready(function() { NProgress.start(); $(window).load(function() { NProgress.done(); }); });
+</script>
