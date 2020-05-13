@@ -80,7 +80,10 @@ endif;
 //主题安装后执行rizhuti_setup钩子函数
 add_action('after_setup_theme', 'rizhuti_setup');
 
+//引入后台框架
+require get_template_directory() . '/inc/csf/codestar-framework.php';
 require get_template_directory() . '/inc/csf/dayuzy/options.dayuzy.php';
+
 
 if ( ! function_exists( '_hui' ) ) {
 	function _hui( $option = '', $default = null ) {
