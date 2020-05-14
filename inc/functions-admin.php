@@ -100,6 +100,25 @@ if (!function_exists('_hui_img')) {
 	}
 }
 
+/* 调试模式选项保存为全局变量 */
+if (_hui('display_errors')) {
+	//ini_set修改配置文件，当本脚本执行完就回到脚本原来的配置
+	ini_set("display_errors", "On");
+	error_reporting(E_ALL);
+} else {
+	ini_set("display_errors", "Off");
+}
+
+// 禁用更新
+if (_hui('display_wp_update')) {
+
+	remove_action('admin_init', '_maybe_update_core');    // 禁止 WordPress 检查更新
+
+	remove_action('admin_init', '_maybe_update_plugins'); // 禁止 WordPress 更新插件
+
+	remove_action('admin_init', '_maybe_update_themes');  // 禁止 WordPress 更新主题
+}
+
 /**
  * 日进去主题的模板标签函数
  */
