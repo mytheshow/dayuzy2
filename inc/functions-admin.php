@@ -119,6 +119,123 @@ if (_hui('display_wp_update')) {
 	remove_action('admin_init', '_maybe_update_themes');  // 禁止 WordPress 更新主题
 }
 
+// 禁用难用的Gutenberg（古腾堡） 编辑器
+if (_hui('disabled_block_editor')) {
+	add_filter('use_block_editor_for_post', '__return_false');
+	remove_action('wp_enqueue_scripts', 'wp_common_block_scripts_and_styles');
+}
+
+/**
+ * 禁止后台加载谷歌字体
+ */
+if (_hui('disabled_open_sans')) {
+
+	function wp_remove_open_sans_from_wp_core()
+	{
+		wp_deregister_style('open-sans');
+		wp_register_style('open-sans', false);
+		wp_enqueue_style('open-sans', '');
+	}
+	add_action('init', 'wp_remove_open_sans_from_wp_core');
+
+}
+
+/**
+ * 清除wordpress自带的meta标签
+ */
+if (_hui('disabled_of_theme_meta')) {
+
+	function ashuwp_clean_theme_meta()
+	{
+		remove_action('wp_head', 'print_emoji_detection_script', 7, 1);
+		remove_action('wp_print_styles', 'print_emoji_styles', 10, 1);
+		remove_action('wp_head', 'rsd_link', 10, 1);
+		remove_action('wp_head', 'wp_generator', 10, 1);
+		remove_action('wp_head', 'feed_links', 2, 1);
+		remove_action('wp_head', 'feed_links_extra', 3, 1);
+		remove_action('wp_head', 'index_rel_link', 10, 1);
+		remove_action('wp_head', 'wlwmanifest_link', 10, 1);
+		remove_action('wp_head', 'start_post_rel_link', 10, 1);
+		remove_action('wp_head', 'parent_post_rel_link', 10, 0);
+		remove_action('wp_head', 'adjacent_posts_rel_link', 10, 0);
+		remove_action('wp_head', 'adjacent_posts_rel_link_wp_head', 10, 0);
+		remove_action('wp_head', 'wp_shortlink_wp_head', 10, 0);
+		remove_action('wp_head', 'rest_output_link_wp_head', 10, 0);
+		remove_action('wp_head', 'wp_oembed_add_discovery_links', 10, 1);
+		remove_action('wp_head', 'rel_canonical', 10, 0);
+	}
+	add_action('after_setup_theme', 'ashuwp_clean_theme_meta'); //清除wp_head带入的meta标签
+}
+
+/**
+ * 防pingback攻击
+ */
+if (_hui('disabled_pingback_ping')) {
+
+	add_filter('xmlrpc_methods', 'remove_xmlrpc_pingback_ping');
+	function remove_xmlrpc_pingback_ping($methods)
+	{
+		unset($methods['pingback.ping']);
+		return $methods;
+	};
+
+}
+
+/**
+ * SSL Gravatar 否则头像请求不到，延迟页面加载时长
+ */
+if (_hui('_get_ssl2_avatar')) {
+	function _get_ssl2_avatar($avatar)
+	{
+		$avatar = preg_replace('/.*\/avatar\/(.*)\?s=([\d]+)&.*/', '<img src="https://secure.gravatar.com/avatar/$1?s=$2&d=mm" class="avatar avatar-$2" height="50" width="50">', $avatar);
+		return $avatar;
+	}
+	add_filter('get_avatar', '_get_ssl2_avatar');
+}
+
+/**
+ * WordPress Emoji Delete
+ */
+if (_hui('disabled_emoji')) {
+
+	remove_action('admin_print_scripts', 'print_emoji_detection_script');
+	remove_action('admin_print_styles', 'print_emoji_styles');
+	remove_action('wp_head', 'print_emoji_detection_script', 7);
+	remove_action('wp_print_styles', 'print_emoji_styles');
+	remove_filter('the_content_feed', 'wp_staticize_emoji');
+	remove_filter('comment_text_rss', 'wp_staticize_emoji');
+	remove_filter('wp_mail', 'wp_staticize_emoji_for_email');
+
+}
+
+// EDITOR STYLE
+add_editor_style(get_stylesheet_directory_uri() . '/editor-style.css');
+
+if (!function_exists('_add_editor_buttons')):
+
+	function _add_editor_buttons($buttons)
+	{
+		$buttons[] = 'fontselect';
+		$buttons[] = 'fontsizeselect';
+		$buttons[] = 'cleanup';
+		$buttons[] = 'styleselect';
+		$buttons[] = 'del';
+		$buttons[] = 'sub';
+		$buttons[] = 'sup';
+		$buttons[] = 'copy';
+		$buttons[] = 'paste';
+		$buttons[] = 'cut';
+		$buttons[] = 'image';
+		$buttons[] = 'anchor';
+		$buttons[] = 'backcolor';
+		$buttons[] = 'wp_page';
+		$buttons[] = 'charmap';
+		return $buttons;
+	}
+	add_filter("mce_buttons", "_add_editor_buttons");
+
+endif;
+
 /**
  * 日进去主题的模板标签函数
  */
