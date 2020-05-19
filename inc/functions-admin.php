@@ -236,6 +236,48 @@ if (!function_exists('_add_editor_buttons')):
 
 endif;
 
+
+// MD5 上传文件重命名
+if (_hui('_new_filename')) {
+	function _new_filename($filename)
+	{
+		$info = pathinfo($filename);
+		$ext  = empty($info['extension']) ? '' : '.' . $info['extension'];
+		$name = basename($filename, $ext);
+		return substr(md5($name), 0, 15) . $ext;
+	}
+	add_filter('sanitize_file_name', '_new_filename', 10);
+}
+
+// Hide Admin Bar，就是登陆后，在前端页面顶部也有个黑条
+if (_hui('hide_admin_bar')) {
+	add_filter('show_admin_bar', 'hide_admin_bar');
+	function hide_admin_bar($flag)
+	{
+		return false;
+	}
+
+}
+
+// COMMENT Ctrl+Enter
+if (!function_exists('_admin_comment_ctrlenter')):
+
+	function _admin_comment_ctrlenter()
+	{
+		echo '<script type="text/javascript">
+                jQuery(document).ready(function($){
+                    $("textarea").keypress(function(e){
+                        if(e.ctrlKey&&e.which==13||e.which==10){
+                            $("#replybtn").click();
+                        }
+                    });
+                });
+            </script>';
+	};
+	add_action('admin_footer', '_admin_comment_ctrlenter');
+
+endif;
+
 /**
  * 日进去主题的模板标签函数
  */
@@ -245,3 +287,35 @@ require_once get_stylesheet_directory() . '/inc/functions-theme.php';
  * 日进去主题的商城订单框架
  */
 require_once get_stylesheet_directory() . '/shop/init.php';
+
+/**
+ * 日进去主题的文章自定义字段选项框架
+ */
+require_once get_template_directory() . '/inc/codestar-framework/dayuzy/metabox.dayuzy.php';
+
+/**
+ * 日进去主题的小工具选项框架
+ */
+//require_once get_template_directory() . '/inc/codestar-framework/rizhuti/widgets.rizhuti.php';
+
+/**
+ * 日进去主题的用户资料选项框架
+ */
+//require_once get_template_directory() . '/inc/codestar-framework/rizhuti/profile.rizhuti.php';
+
+/**
+ * 日进去主题的简码内容
+ */
+//require_once get_template_directory() . '/inc/codestar-framework/rizhuti/shortcoder.rizhuti.php';
+
+/**
+ * 日进去主题的自定义SEO分类信息
+ */
+//require_once get_template_directory() . '/inc/codestar-framework/rizhuti/taxonomy.rizhuti.php';
+
+/**
+ * 日进去主题的QQ登录模块
+ */
+//if (_hui('is_oauth_qq', false)) {
+//	require_once get_stylesheet_directory() . '/oauth/qq/qq-class.php';
+//}
