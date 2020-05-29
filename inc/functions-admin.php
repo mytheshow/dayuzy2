@@ -291,7 +291,7 @@ require_once get_stylesheet_directory() . '/shop/init.php';
 /**
  * 日进去主题的文章自定义字段选项框架
  */
-require_once get_template_directory() . '/inc/codestar-framework/dayuzy/metabox.dayuzy.php';
+require_once get_template_directory() . '/inc/csf/dayuzy/metabox.dayuzy.php';
 
 /**
  * 日进去主题的小工具选项框架

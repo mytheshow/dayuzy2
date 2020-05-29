@@ -12,6 +12,7 @@ if( ! class_exists( 'CSF' ) ) {
 
     // constants
     public static $version = '2.0.7';
+    //专业版，付费版，premium额外费用
     public static $premium = true;
     public static $dir     = null;
     public static $url     = null;
@@ -27,7 +28,7 @@ if( ! class_exists( 'CSF' ) ) {
       'widgets'            => array(),
     );
 
-    // shortcode instances
+    // shortcode instances 短代码
     public static $shortcode_instances = array();
 
     // init
@@ -36,7 +37,7 @@ if( ! class_exists( 'CSF' ) ) {
       // init action
       do_action( 'csf_init' );
 
-      // set constants
+      // set constants 设置常量
       self::constants();
 
       // include files
@@ -44,7 +45,20 @@ if( ! class_exists( 'CSF' ) ) {
 
       // setup textdomain
       self::textdomain();
-
+//在一个类中使用 add_action 添加 $this 和 函数名称 到你的 add_action 回调
+//	    class MyPluginClass
+//	    {
+//		    public function __construct()
+//		    {
+//			    //add your actions to the constructor!
+//			    add_action( 'save_post', array( $this, 'myplugin_save_posts' ) );
+//		    }
+//
+//		    public function myplugin_save_posts()
+//		    {
+//			    //do stuff here...
+//		    }
+//	    }
       add_action( 'after_setup_theme', array( 'CSF', 'setup' ) );
       add_action( 'init', array( 'CSF', 'setup' ) );
       add_action( 'switch_theme', array( 'CSF', 'setup' ) );
@@ -56,21 +70,26 @@ if( ! class_exists( 'CSF' ) ) {
     public static function setup() {
 
       // welcome page
+	    //$aa = self::include_plugin_file( 'views/welcome.php' );
       self::include_plugin_file( 'views/welcome.php' );
 
       // setup options
       $params = array();
       if ( ! empty( self::$args['options'] ) ) {
+      	//$key=>'cs_my_options',$value=>[menu_title=>'主题设置',menu_slug=>'cs-options']
+	      //说白了就是options['key'] sections['key'] 后面的可以理解为customize_options['key'],metaboxes['key']
+	      //$args['sections']是所有的（节），而它所对应的（类型）区分比较详细 options customize_options  metaboxes profile_options等
         foreach( self::$args['options'] as $key => $value ) {
           if( ! empty( self::$args['sections'][$key] ) && ! isset( self::$inited[$key] ) ) {
 
             $params['args']     = $value;
             $params['sections'] = self::$args['sections'][$key];
             self::$inited[$key] = true;
-
+						//把options.dayuzy.php下面的配置实例化
             CSF_Options::instance( $key, $params );
-
+						//如果设置了show_in_customizer
             if( ! empty( $value['show_in_customizer'] ) ) {
+
               self::$args['customize_options'][$key] = ( is_array( $value['show_in_customizer'] ) ) ? $value['show_in_customizer'] : $value;
             }
 
@@ -88,10 +107,8 @@ if( ! class_exists( 'CSF' ) ) {
             $params['args']     = $value;
             $params['sections'] = self::$args['sections'][$key];
             self::$inited[$key] = true;
-
+						//实例化自定义的
             CSF_Customize_Options::instance( $key, $params );
-
-
           }
         }
       }
@@ -249,13 +266,24 @@ if( ! class_exists( 'CSF' ) ) {
       $path     = '';
       $file     = ltrim( $file, '/' );
       $override = apply_filters( 'csf_override', 'csf-override' );
+//	    $aa = get_parent_theme_file_path( $override .'/'. $file );
+//	    $bb = get_theme_file_path( $override .'/'. $file );
+//	    $cc = self::$dir .'/'. $override .'/'. $file;
 
+//	    $dd = file_exists( get_parent_theme_file_path( $override .'/'. $file ));
+//	    $ee = file_exists( get_theme_file_path( $override .'/'. $file ) );
+//	    $ff = file_exists( self::$dir .'/'. $override .'/'. $file ) ;
+//	    $gg = file_exists( self::$dir .'/'. $file );
+	    //父主题路径
       if( file_exists( get_parent_theme_file_path( $override .'/'. $file ) ) ) {
         $path = get_parent_theme_file_path( $override .'/'. $file );
+        //子主题路径
       } elseif ( file_exists( get_theme_file_path( $override .'/'. $file ) ) ) {
         $path = get_theme_file_path( $override .'/'. $file );
+        //当前路径
       } elseif ( file_exists( self::$dir .'/'. $override .'/'. $file ) ) {
         $path = self::$dir .'/'. $override .'/'. $file;
+        //当前路径下的当前文件
       } elseif ( file_exists( self::$dir .'/'. $file ) ) {
         $path = self::$dir .'/'. $file;
       }

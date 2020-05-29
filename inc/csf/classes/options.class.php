@@ -88,13 +88,18 @@ if( ! class_exists( 'CSF_Options' ) ) {
     // run framework construct
     public function __construct( $key, $params = array() ) {
 
-      $this->unique   = $key;
+      $this->unique   = $key;//cs_my_options
+	    //把$params['args']里面的framework_title ,framework_class, menu_title ,menu_slug 等等 赋值给 $this->args
       $this->args     = apply_filters( "csf_{$this->unique}_args", wp_parse_args( $params['args'], $this->args ), $this );
+      //把$params['sections']赋值给$this->sections
       $this->sections = apply_filters( "csf_{$this->unique}_sections", $params['sections'], $this );
 
       // run only is admin panel options, avoid performance loss
+	    //admin面板的 tab
       $this->pre_tabs     = $this->pre_tabs( $this->sections );
+      //admin面板 tab下的第一层fields
       $this->pre_fields   = $this->pre_fields( $this->sections );
+      //admin面板 下的tab包括展开的tab
       $this->pre_sections = $this->pre_sections( $this->sections );
 
       $this->get_options();
@@ -118,7 +123,7 @@ if( ! class_exists( 'CSF_Options' ) ) {
     public static function instance( $key, $params = array() ) {
       return new self( $key, $params );
     }
-
+		//预处理tab，循环sections，把子节点挂载到父节点，按照优先级排序后返回
     public function pre_tabs( $sections ) {
 
       $result  = array();
@@ -126,26 +131,33 @@ if( ! class_exists( 'CSF_Options' ) ) {
       $count   = 100;
 
       foreach( $sections as $key => $section ) {
+	      // 首页设置: 布局 有'parent'字段
         if( ! empty( $section['parent'] ) ) {
+        	//如果设置了优先级
           $section['priority'] = ( isset( $section['priority'] ) ) ? $section['priority'] : $count;
+          //把他推进二维数组键是 $parents['basic_fields'][]=$section
           $parents[$section['parent']][] = $section;
+          //删除该项
           unset( $sections[$key] );
         }
         $count++;
       }
-
+			//删除后的再次循环
       foreach( $sections as $key => $section ) {
+      	//设置优先级
         $section['priority'] = ( isset( $section['priority'] ) ) ? $section['priority'] : $count;
+        //如果删除后的数组循环，该项的id等于上面提取出来$parents[$section['id']， $section['id']==$parents[$section['id']]
         if( ! empty( $section['id'] ) && ! empty( $parents[$section['id']] ) ) {
+        	//把"模块布局","幻灯片"等功能按照优先级排序后挂载到他们的父级"首页设置"下面
           $section['subs'] = wp_list_sort( $parents[$section['id']], array( 'priority' => 'ASC' ), 'ASC', true );
         }
         $result[] = $section;
         $count++;
       }
-
+			//整体按照优先级排下序
       return wp_list_sort( $result, array( 'priority' => 'ASC' ), 'ASC', true );
     }
-
+		//预处理 fields 把$sections下的第一个fields数组提取出来
     public function pre_fields( $sections ) {
 
       $result  = array();
@@ -160,7 +172,7 @@ if( ! class_exists( 'CSF_Options' ) ) {
 
       return $result;
     }
-
+		//预处理节点 $sections参数没什么用，函数的功能是提取section,但是"首页设置"下面有subs，我们就循环subs，然后提取
     public function pre_sections( $sections ) {
 
       $result = array();
@@ -175,7 +187,8 @@ if( ! class_exists( 'CSF_Options' ) ) {
           $result[] = $tab;
         }
       }
-
+			$aa = is_network_admin();
+      $bb = is_admin();
       return $result;
     }
 
@@ -192,6 +205,7 @@ if( ! class_exists( 'CSF_Options' ) ) {
         $wp_admin_bar->add_node( array(
           'id'    => $menu_slug,
           'title' => $menu_icon . $this->args['menu_title'],
+          //是否是多站点后台页面
           'href'  => ( is_network_admin() ) ? network_admin_url( 'admin.php?page='. $menu_slug ) : admin_url( 'admin.php?page='. $menu_slug ),
         ) );
 
